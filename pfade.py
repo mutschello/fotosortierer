@@ -12,6 +12,7 @@ import shutil
 import sys
 
 APP_NAME = "Fotosortierer"
+VERSION = "1.0.0"
 
 
 def ist_gebundelt():
@@ -64,3 +65,35 @@ def daten_datei(name):
                 except Exception:
                     return alt
     return ziel
+
+
+def build_datum():
+    """
+    Datum des Builds als "TT.MM.JJJJ".
+
+    Als EXE ist das der Zeitstempel der EXE selbst - den schreibt
+    PyInstaller beim Bauen, und Windows behaelt ihn beim Kopieren bei.
+    Im Quellcode-Betrieb gibt es keinen Build, daher die neueste
+    Aenderung an den Programmdateien.
+    """
+    from datetime import datetime
+
+    try:
+        if ist_gebundelt():
+            stempel = os.path.getmtime(sys.executable)
+        else:
+            ordner = programm_verzeichnis()
+            dateien = [
+                os.path.join(ordner, n)
+                for n in os.listdir(ordner)
+                if n.endswith(".py")
+            ]
+            stempel = max(os.path.getmtime(d) for d in dateien)
+        return datetime.fromtimestamp(stempel).strftime("%d.%m.%Y")
+    except Exception:
+        return "unbekannt"
+
+
+def titel_zusatz():
+    """Versions- und Build-Angabe fuer die Fensterkopfzeile."""
+    return "v{} (Build {})".format(VERSION, build_datum())

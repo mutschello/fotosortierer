@@ -22,7 +22,7 @@ EINSTELLUNGEN_DATEI = pfade.daten_datei("einstellungen.json")
 class FotoSortiererApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Foto-Sortierer – Schornsteinfeger")
+        self.title(f"Foto-Sortierer – Schornsteinfeger   {pfade.titel_zusatz()}")
         self.geometry("1000x700")
         self.minsize(800, 600)
 
