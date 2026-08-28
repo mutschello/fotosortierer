@@ -5,5 +5,4 @@ einstellungen.json
 adressbuch.json
 build/
 dist/
-installer_output/
 *.spec.bak

@@ -48,44 +48,34 @@ Beim Start:
 
 Ordner- und letzte Pfadangaben werden gemerkt (`einstellungen.json`).
 
-## Für Kunden: Installation ohne Python
+## Für Kunden: Nutzung ohne Python
 
-Endanwender brauchen **kein Python**. Es gibt zwei Varianten:
+Endanwender brauchen **kein Python**. Die Datei `Fotosortierer.exe` wird
+einfach auf den Rechner kopiert und per Doppelklick gestartet - keine
+Installation, kein Setup. Sie enthält alles Nötige, auch die
+HEIC-Unterstützung für iPhone-Fotos.
 
-**A) Installer (empfohlen)**
-`Fotosortierer-Setup-1.0.0.exe` ausführen. Der Installer legt einen
-Startmenü-Eintrag an, optional ein Desktop-Symbol, und benötigt
-**keine Administratorrechte**.
-
-**B) Portable EXE**
-`Fotosortierer.exe` einfach auf den Rechner kopieren und doppelklicken –
-keine Installation, kein Setup.
-
-Einstellungen und Adressbuch werden in beiden Fällen unter
-`%APPDATA%\Fotosortierer\` gespeichert. Bei einer Deinstallation bleiben
-diese Daten absichtlich erhalten. Wer von der Skript-Version umsteigt:
+Einstellungen und Adressbuch werden unter `%APPDATA%\Fotosortierer\`
+gespeichert, nicht neben der EXE. Wer von der Skript-Version umsteigt:
 eine vorhandene `adressbuch.json` neben dem Programm wird beim ersten
 Start automatisch dorthin übernommen.
 
-## Für Entwickler: EXE und Installer bauen
+Beim ersten Start zeigt Windows eine SmartScreen-Warnung, weil die EXE
+nicht signiert ist. Über "Weitere Informationen" -> "Trotzdem ausführen"
+lässt sie sich starten.
 
-Alles Nötige erledigt das Build-Skript auf einem Windows-PC:
+## Für Entwickler: EXE bauen
+
+Auf einem Windows-PC genügt:
 
 ```
 .\build.ps1
 ```
 
-Es baut zuerst `dist\Fotosortierer.exe` (PyInstaller, ca. 24 MB, alles
-enthalten – auch die HEIC-Bibliotheken) und danach den Installer unter
-`installer_output\`. Für den Installer wird Inno Setup benötigt:
-
-```
-winget install --id JRSoftware.InnoSetup
-```
-
-Fehlt Inno Setup, überspringt das Skript diesen Schritt und die portable
-EXE wird trotzdem gebaut. Die Build-Konfiguration steckt in
-`fotosortierer.spec` (EXE) und `installer.iss` (Installer).
+Ergebnis ist `dist\Fotosortierer.exe` (ca. 24 MB, alles enthalten).
+Die Build-Konfiguration steckt in `fotosortierer.spec`; dort wird unter
+anderem `collect_all("pillow_heif")` gesetzt, damit die nativen
+HEIC-Bibliotheken mit in die EXE wandern.
 
 ## Hinweise & Grenzen
 
