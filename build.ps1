@@ -1,6 +1,6 @@
 <#
-    Baut den Foto-Sortierer als Windows-Programm und schnuert daraus
-    einen Setup-Assistenten.
+    Baut den Foto-Sortierer als Windows-Programm und packt ihn zur
+    Weitergabe in ein ZIP.
 
     Gebaut wird mit Nuitka, nicht mit PyInstaller: Virenscanner melden
     PyInstaller-Programme regelmaessig als Fehlerkennung, weil alle
@@ -9,10 +9,7 @@
 
     Aufruf:   .\build.ps1
     Ergebnis: dist\Fotosortierer\ (Programmordner)
-              dist\Fotosortierer-Setup-<version>.exe  (zum Weitergeben)
-
-    Benoetigt Inno Setup fuer das Setup:
-              winget install --id JRSoftware.InnoSetup
+              dist\Fotosortierer-<version>.zip  (zum Weitergeben)
 #>
 
 $ErrorActionPreference = "Stop"
@@ -35,7 +32,7 @@ Write-Host "`nFoto-Sortierer $version" -ForegroundColor Cyan
 Write-Host "`n[1/3] Packe Quellcode..." -ForegroundColor Cyan
 $quellen = @(
     "main.py", "sortier_logik.py", "pfade.py",
-    "installer.iss", "version_info.txt", "fotosortierer.ico",
+    "version_info.txt", "fotosortierer.ico",
     "build.ps1", "requirements.txt", "ANLEITUNG.md", "LICENSE"
 )
 $fehlend = $quellen | Where-Object { -not (Test-Path $_) }
@@ -76,26 +73,15 @@ if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
 New-Item -ItemType Directory "dist" | Out-Null
 Move-Item "build_nuitka\main.dist" "dist\Fotosortierer"
 
-Write-Host "`n[3/3] Baue Setup mit Inno Setup..." -ForegroundColor Cyan
-$iscc = @(
-    "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
-    "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
-    "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe"
-) | Where-Object { Test-Path $_ } | Select-Object -First 1
-
-if ($null -eq $iscc) {
-    Write-Host "Inno Setup nicht gefunden - Setup uebersprungen." -ForegroundColor Yellow
-    Write-Host "Installieren mit:  winget install --id JRSoftware.InnoSetup" -ForegroundColor Yellow
-    Write-Host "`nErsatzweise wird der Programmordner als ZIP gepackt." -ForegroundColor Yellow
-    Compress-Archive -Path "dist\Fotosortierer" -DestinationPath "dist\Fotosortierer-$version.zip"
-    Write-Host "`nFertig (ohne Setup)." -ForegroundColor Green
-    Write-Host "An Kunden weitergeben: dist\Fotosortierer-$version.zip" -ForegroundColor Green
-    exit 0
-}
-
-& $iscc "/DAppVersion=$version" installer.iss
-if ($LASTEXITCODE -ne 0) { throw "Inno-Setup-Build fehlgeschlagen." }
+# Ausgeliefert wird ein ZIP, kein Installer. Virenscanner beanstanden
+# selbstentpackende Setup-Dateien als Fehlerkennung - der blosse
+# Programmordner im ZIP kommt dagegen durch. Die Desktop-Verknuepfung legt
+# das Programm selbst an (Extras > Verknuepfung auf dem Desktop anlegen).
+Write-Host "`n[3/3] Packe Programmordner fuer die Weitergabe..." -ForegroundColor Cyan
+$paket = "dist\Fotosortierer-$version.zip"
+if (Test-Path $paket) { Remove-Item $paket }
+Compress-Archive -Path "dist\Fotosortierer" -DestinationPath $paket
 
 Write-Host "`nFertig." -ForegroundColor Green
-Write-Host "An Kunden weitergeben: dist\Fotosortierer-Setup-$version.exe" -ForegroundColor Green
-Write-Host "Der Kunde startet die Datei und folgt dem Assistenten." -ForegroundColor Green
+Write-Host "An Kunden weitergeben: $paket" -ForegroundColor Green
+Write-Host "Der Kunde entpackt es und startet Fotosortierer.exe." -ForegroundColor Green

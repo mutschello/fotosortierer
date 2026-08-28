@@ -52,31 +52,42 @@ Ordner- und letzte Pfadangaben werden gemerkt (`einstellungen.json`).
 
 ## Für Kunden: Installation
 
-Endanwender brauchen **kein Python**. Sie bekommen eine einzelne
-Installationsdatei `Fotosortierer-Setup-<version>.exe`:
+Endanwender brauchen **kein Python**. Sie bekommen ein ZIP-Archiv
+`Fotosortierer-<version>.zip`:
 
-1. Datei doppelklicken
-2. Dem Setup-Assistenten folgen
-3. Fertig - das Programm liegt im Startmenü und auf dem Desktop
+1. Archiv herunterladen
+2. Mit Rechtsklick auf "Alle extrahieren" entpacken - am besten nach
+   `Dokumente` oder an einen anderen dauerhaften Ort
+3. Im entpackten Ordner `Fotosortierer.exe` doppelklicken
 
-Es werden **keine Administratorrechte** benötigt, es erscheint also kein
-UAC-Dialog. Entfernen lässt sich das Programm wie jedes andere über
-*Einstellungen > Apps > Installierte Apps*.
+Beim ersten Start fragt das Programm, ob es ein Symbol auf dem Desktop
+anlegen soll. Danach genügt ein Doppelklick auf dieses Symbol. Nachholen
+lässt sich das jederzeit über *Extras > Verknüpfung auf dem Desktop
+anlegen*.
+
+Das Programm **nicht direkt aus dem ZIP heraus starten** - Windows führt
+es dann in einem temporären Ordner aus, in dem es nichts speichern kann.
+Der entpackte Ordner darf auch nicht verschoben werden, ohne die
+Verknüpfung neu anzulegen.
 
 Einstellungen und Adressbuch werden unter `%APPDATA%\Fotosortierer\`
-gespeichert und bei einer Deinstallation **absichtlich behalten**. Wer von
-der Skript-Version umsteigt: eine vorhandene `adressbuch.json` neben dem
-Programm wird beim ersten Start automatisch dorthin übernommen.
+gespeichert, nicht im Programmordner. Wer von der Skript-Version
+umsteigt: eine vorhandene `adressbuch.json` neben dem Programm wird beim
+ersten Start automatisch dorthin übernommen.
 
-### Warnungen von Windows und Virenscannern
+### Warum kein Installer?
 
-Das Setup ist nicht signiert. Deshalb kann zweierlei auftreten:
+Ein Setup-Assistent wäre bequemer, ist aber nicht praktikabel:
+Virenscanner beanstanden selbstentpackende Installationsdateien als
+vermeintliche Bedrohung, obwohl nichts Schädliches darin ist. Bei einem
+Kunden blockierte Norton das Setup wiederholt, den blossen Programmordner
+im ZIP dagegen nicht. Deshalb die Auslieferung als Archiv.
 
-- **SmartScreen** ("Der Computer wurde durch Windows geschützt"): auf
-  "Weitere Informationen" klicken, dann "Trotzdem ausführen"
-- **Virenscanner** melden unter Umständen einen Fund wie `IDP.Generic`
-  oder blockieren den Download. Das sind heuristische Fehlerkennungen,
-  keine tatsächlichen Funde
+### Warnungen von Windows
+
+Das Programm ist nicht signiert. SmartScreen kann daher melden "Der
+Computer wurde durch Windows geschützt" - über "Weitere Informationen"
+-> "Trotzdem ausführen" lässt es sich starten.
 
 ## Lizenz
 
@@ -94,7 +105,7 @@ Quellcode bekommen. Er steckt deshalb in der EXE selbst - abrufbar über
 **Hilfe > Quellcode speichern**. Es genügt also, die EXE weiterzugeben;
 weitere Dateien sind nicht nötig.
 
-## Für Entwickler: Setup bauen
+## Für Entwickler: Programm bauen
 
 Auf einem Windows-PC genügt:
 
@@ -102,25 +113,22 @@ Auf einem Windows-PC genügt:
 .\build.ps1
 ```
 
-Ergebnis ist `dist\Fotosortierer-Setup-<version>.exe` - der
-Setup-Assistent zum Weitergeben. Fehlt Inno Setup, packt das Skript
-ersatzweise ein ZIP des Programmordners.
-
-Für das Setup wird Inno Setup benötigt:
-
-```
-winget install --id JRSoftware.InnoSetup
-```
+Ergebnis ist `dist\Fotosortierer-<version>.zip` - das Archiv zum
+Weitergeben.
 
 Gebaut wird mit **Nuitka**, das den Python-Code nach C übersetzt. Der
-naheliegendere Weg über PyInstaller wurde aufgegeben: Virenscanner
-melden dessen Programme regelmäßig als Fehlerkennung, weil alle
+naheliegendere Weg über PyInstaller wurde aufgegeben: Virenscanner melden
+dessen Programme regelmäßig als Fehlerkennung, weil alle
 PyInstaller-Programme denselben Bootloader enthalten. Bei einem Kunden
-verschob Norton die Datei wiederholt in Quarantäne; mit dem
-Nuitka-Build trat das nicht mehr auf.
+verschob Norton die Datei wiederholt in Quarantäne; mit dem Nuitka-Build
+trat das nicht mehr auf.
 
-Die C-Übersetzung dauert einige Minuten. Das Setup selbst beschreibt
-`installer.iss`.
+Ein Setup mit Inno Setup gab es zwischenzeitlich, wurde aber wieder
+entfernt - Norton beanstandete den Installer ebenso. Das Skript dafür
+steht in der Git-Historie, falls einmal ein Code-Signing-Zertifikat
+vorliegt und der Weg wieder gangbar wird.
+
+Die C-Übersetzung dauert einige Minuten.
 
 ## Hinweise & Grenzen
 

@@ -69,6 +69,7 @@ class FotoSortiererApp(tk.Tk):
         self.eingangsordner = tk.StringVar()
         self.zielordner = tk.StringVar()
         self.kopieren = tk.BooleanVar(value=False)
+        self.verknuepfung_gefragt = False
 
         self.adressbuch = logik.Adressbuch()
         self.gruppen = []
@@ -76,6 +77,7 @@ class FotoSortiererApp(tk.Tk):
 
         self._lade_einstellungen()
         self._baue_oberflaeche()
+        self.after(400, self._frage_nach_verknuepfung)
 
     # -- Einstellungen (Ordnerpfade merken) ---------------------------------
 
@@ -87,6 +89,7 @@ class FotoSortiererApp(tk.Tk):
                     daten = json.load(f)
                 self.eingangsordner.set(daten.get("eingangsordner", ""))
                 self.zielordner.set(daten.get("zielordner", ""))
+                self.verknuepfung_gefragt = bool(daten.get("verknuepfung_gefragt", False))
             except Exception:
                 pass
 
@@ -96,12 +99,18 @@ class FotoSortiererApp(tk.Tk):
             json.dump({
                 "eingangsordner": self.eingangsordner.get(),
                 "zielordner": self.zielordner.get(),
+                "verknuepfung_gefragt": self.verknuepfung_gefragt,
             }, f)
 
     # -- Oberfläche -----------------------------------------------------------
 
     def _baue_menue(self):
         menueleiste = tk.Menu(self)
+
+        extras = tk.Menu(menueleiste, tearoff=0)
+        extras.add_command(label="Verknüpfung auf dem Desktop anlegen",
+                           command=self._lege_verknuepfung_an)
+        menueleiste.add_cascade(label="Extras", menu=extras)
 
         hilfe = tk.Menu(menueleiste, tearoff=0)
         hilfe.add_command(label="Quellcode speichern...", command=self._speichere_quellcode)
@@ -110,6 +119,56 @@ class FotoSortiererApp(tk.Tk):
         menueleiste.add_cascade(label="Hilfe", menu=hilfe)
 
         self.config(menu=menueleiste)
+
+    def _lege_verknuepfung_an(self, still=False):
+        """
+        Legt die Desktop-Verknuepfung an.
+
+        Das Programm wird ohne Installer ausgeliefert, weil Virenscanner
+        Setup-Dateien faelschlich beanstanden. Damit es sich trotzdem wie
+        installiert anfuehlt, legt es die Verknuepfung selbst an.
+        """
+        try:
+            pfad = pfade.desktop_verknuepfung_anlegen()
+        except Exception as fehler:
+            if not still:
+                messagebox.showerror(
+                    "Verknüpfung fehlgeschlagen",
+                    f"""Die Verknüpfung konnte nicht angelegt werden:
+
+{fehler}""",
+                    parent=self,
+                )
+            return False
+
+        if not still:
+            messagebox.showinfo(
+                "Verknüpfung angelegt",
+                f"""Auf dem Desktop liegt jetzt das Symbol "Foto-Sortierer".
+
+{pfad}""",
+                parent=self,
+            )
+        return True
+
+    def _frage_nach_verknuepfung(self):
+        """
+        Bietet beim ersten Start einmalig an, eine Desktop-Verknuepfung
+        anzulegen. Die Antwort wird gemerkt und nicht erneut erfragt.
+        """
+        if not pfade.ist_gebundelt() or self.verknuepfung_gefragt:
+            return
+        self.verknuepfung_gefragt = True
+        self._speichere_einstellungen()
+        antwort = messagebox.askyesno(
+            "Verknüpfung anlegen?",
+            """Soll ein Symbol für den Foto-Sortierer auf dem Desktop angelegt werden?
+
+Sie können das später jederzeit über Extras nachholen.""",
+            parent=self,
+        )
+        if antwort:
+            self._lege_verknuepfung_an()
 
     def _speichere_quellcode(self):
         """

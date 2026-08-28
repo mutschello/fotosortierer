@@ -22,7 +22,7 @@ import shutil
 import sys
 
 APP_NAME = "Fotosortierer"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 
 def ist_gebundelt():
@@ -135,3 +135,55 @@ def build_datum():
 def titel_zusatz():
     """Versions- und Build-Angabe fuer die Fensterkopfzeile."""
     return "v{} (Build {})".format(VERSION, build_datum())
+
+
+def desktop_verknuepfung_anlegen():
+    """
+    Legt eine Verknuepfung zum Programm auf dem Desktop an und gibt deren
+    Pfad zurueck. Bei Misserfolg wird eine Exception ausgeloest.
+
+    Ohne Installer muss das Programm das selbst koennen. Die Verknuepfung
+    entsteht ueber den Windows Script Host, den PowerShell bereitstellt -
+    das spart eine zusaetzliche Abhaengigkeit. Der Desktop-Pfad wird dabei
+    erfragt statt geraten, denn OneDrive leitet ihn haeufig um.
+    """
+    import subprocess
+
+    ziel = programm_datei()
+    if not ziel:
+        raise RuntimeError("Programmdatei nicht gefunden.")
+    ordner = os.path.dirname(ziel)
+
+    def ps_text(wert):
+        # In PowerShell werden Apostrophe durch Verdoppeln maskiert.
+        return "'" + str(wert).replace("'", "''") + "'"
+
+    befehl = (
+        "$ErrorActionPreference = 'Stop'; "
+        "$d = [Environment]::GetFolderPath('Desktop'); "
+        "$p = Join-Path $d 'Foto-Sortierer.lnk'; "
+        "$w = New-Object -ComObject WScript.Shell; "
+        "$s = $w.CreateShortcut($p); "
+        "$s.TargetPath = " + ps_text(ziel) + "; "
+        "$s.WorkingDirectory = " + ps_text(ordner) + "; "
+        "$s.IconLocation = " + ps_text(str(ziel) + ",0") + "; "
+        "$s.Description = 'Foto-Sortierer fuer Schornsteinfeger'; "
+        "$s.Save(); "
+        "Write-Output $p"
+    )
+
+    # CREATE_NO_WINDOW verhindert, dass kurz ein Konsolenfenster aufblitzt.
+    ergebnis = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-Command", befehl],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+    )
+    if ergebnis.returncode != 0:
+        raise RuntimeError((ergebnis.stderr or "Unbekannter Fehler").strip())
+
+    pfad = ergebnis.stdout.strip().splitlines()[-1] if ergebnis.stdout.strip() else ""
+    if not pfad or not os.path.isfile(pfad):
+        raise RuntimeError("Die Verknuepfung wurde nicht angelegt.")
+    return pfad
