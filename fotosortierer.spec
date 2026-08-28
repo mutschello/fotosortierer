@@ -13,7 +13,10 @@ a = Analysis(
     ["main.py"],
     pathex=[],
     binaries=heif_binaries,
-    datas=heif_datas,
+    # Quellcode.zip wird von build.ps1 vor dem Bauen erzeugt und hier in die
+    # EXE gelegt. Die GPL verlangt, dass Empfaenger an den Quellcode kommen -
+    # eingebettet bleibt es bei einer einzigen Datei zum Weitergeben.
+    datas=heif_datas + [("Quellcode.zip", ".")],
     hiddenimports=heif_hidden,
     hookspath=[],
     runtime_hooks=[],

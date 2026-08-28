@@ -78,8 +78,9 @@ sie schon beim Laden einbindet - ohne sie wäre keine HEIC-Unterstützung
 für iPhone-Fotos möglich.
 
 **Für die Weitergabe bedeutet das:** Wer die EXE bekommt, muss auch den
-Quellcode bekommen. Das Build-Skript legt deshalb `Quellcode.zip` neben
-die EXE. Beide Dateien zusammen weitergeben, dann ist die Lizenz erfüllt.
+Quellcode bekommen. Er steckt deshalb in der EXE selbst - abrufbar über
+**Hilfe > Quellcode speichern**. Es genügt also, die EXE weiterzugeben;
+weitere Dateien sind nicht nötig.
 
 ## Für Entwickler: EXE bauen
 

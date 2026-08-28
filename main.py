@@ -18,6 +18,7 @@ Start: python main.py
 # LICENSE, die dem Programm beiliegt.
 
 import os
+import shutil
 import threading
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -28,6 +29,7 @@ import pfade
 
 EINSTELLUNGEN_DATEI = pfade.daten_datei("einstellungen.json")
 
+QUELLCODE_ARCHIV = "Quellcode.zip"
 COPYRIGHT_JAHR = "2026"
 RECHTEINHABER = "Jürgen Mutscheller – mutschweb"
 
@@ -37,8 +39,8 @@ Version {version} (Build {build})
 © {jahr} {inhaber}
 
 Freie Software unter der GNU General Public License,
-Version 3 oder später. Der vollständige Quellcode liegt
-als Quellcode.zip bei, der Lizenztext in der Datei LICENSE.
+Version 3 oder später. Der vollständige Quellcode ist in
+diesem Programm enthalten: Hilfe > Quellcode speichern.
 
 Dieses Programm kommt OHNE JEDE GEWÄHRLEISTUNG.
 
@@ -102,10 +104,63 @@ class FotoSortiererApp(tk.Tk):
         menueleiste = tk.Menu(self)
 
         hilfe = tk.Menu(menueleiste, tearoff=0)
+        hilfe.add_command(label="Quellcode speichern...", command=self._speichere_quellcode)
+        hilfe.add_separator()
         hilfe.add_command(label="Über Foto-Sortierer...", command=self._zeige_ueber)
         menueleiste.add_cascade(label="Hilfe", menu=hilfe)
 
         self.config(menu=menueleiste)
+
+    def _speichere_quellcode(self):
+        """
+        Gibt den in der EXE eingebetteten Quellcode heraus.
+
+        Die GPL verlangt, dass jeder Empfaenger des Programms auch an den
+        Quellcode kommt. Er steckt deshalb im Programm selbst - so gibt es
+        nur eine Datei weiterzugeben.
+        """
+        quelle = os.path.join(pfade.ressourcen_verzeichnis(), QUELLCODE_ARCHIV)
+        if not os.path.isfile(quelle):
+            messagebox.showerror(
+                "Quellcode nicht gefunden",
+                """Der Quellcode ist in dieser Fassung nicht eingebettet.
+
+Beim Start aus dem Quellcode heraus liegen die Dateien
+ohnehin offen im Programmordner. In der fertigen EXE
+wird das Archiv von build.ps1 mit eingebaut.""",
+                parent=self,
+            )
+            return
+
+        ziel = filedialog.asksaveasfilename(
+            parent=self,
+            title="Quellcode speichern",
+            initialfile=QUELLCODE_ARCHIV,
+            defaultextension=".zip",
+            filetypes=[("ZIP-Archiv", "*.zip")],
+        )
+        if not ziel:
+            return
+
+        try:
+            shutil.copyfile(quelle, ziel)
+        except Exception as fehler:
+            messagebox.showerror(
+                "Speichern fehlgeschlagen",
+                f"""Der Quellcode konnte nicht gespeichert werden:
+
+{fehler}""",
+                parent=self,
+            )
+            return
+
+        messagebox.showinfo(
+            "Quellcode gespeichert",
+            f"""Der vollständige Quellcode wurde gespeichert:
+
+{ziel}""",
+            parent=self,
+        )
 
     def _zeige_ueber(self):
         messagebox.showinfo("Über Foto-Sortierer", UEBER_TEXT, parent=self)
