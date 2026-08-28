@@ -50,36 +50,33 @@ Beim Start:
 
 Ordner- und letzte Pfadangaben werden gemerkt (`einstellungen.json`).
 
-## Für Kunden: Nutzung ohne Python
+## Für Kunden: Installation
 
-Endanwender brauchen **kein Python**. Sie bekommen ein ZIP-Archiv
-`Fotosortierer-<version>.zip`:
+Endanwender brauchen **kein Python**. Sie bekommen eine einzelne
+Installationsdatei `Fotosortierer-Setup-<version>.exe`:
 
-1. Archiv herunterladen
-2. Mit Rechtsklick auf "Alle extrahieren" entpacken
-3. Im entpackten Ordner `Fotosortierer.exe` doppelklicken
+1. Datei doppelklicken
+2. Dem Setup-Assistenten folgen
+3. Fertig - das Programm liegt im Startmenü und auf dem Desktop
 
-Das Programm **nicht direkt aus dem ZIP heraus starten** - Windows führt es
-dann in einem temporären Ordner aus, in dem es nichts speichern kann.
-
-Der Ordner enthält neben der EXE ein Unterverzeichnis `_internal` mit den
-benötigten Bibliotheken, auch für HEIC-Fotos vom iPhone. Beides gehört
-zusammen und darf nicht getrennt werden.
+Es werden **keine Administratorrechte** benötigt, es erscheint also kein
+UAC-Dialog. Entfernen lässt sich das Programm wie jedes andere über
+*Einstellungen > Apps > Installierte Apps*.
 
 Einstellungen und Adressbuch werden unter `%APPDATA%\Fotosortierer\`
-gespeichert, nicht im Programmordner. Wer von der Skript-Version umsteigt:
-eine vorhandene `adressbuch.json` neben dem Programm wird beim ersten
-Start automatisch dorthin übernommen.
+gespeichert und bei einer Deinstallation **absichtlich behalten**. Wer von
+der Skript-Version umsteigt: eine vorhandene `adressbuch.json` neben dem
+Programm wird beim ersten Start automatisch dorthin übernommen.
 
 ### Warnungen von Windows und Virenscannern
 
-Das Programm ist nicht signiert. Deshalb kann zweierlei auftreten:
+Das Setup ist nicht signiert. Deshalb kann zweierlei auftreten:
 
 - **SmartScreen** ("Der Computer wurde durch Windows geschützt"): auf
   "Weitere Informationen" klicken, dann "Trotzdem ausführen"
-- **Virenscanner** melden unter Umständen einen Fund wie `IDP.Generic`.
-  Das ist eine heuristische Fehlerkennung, kein tatsächlicher Fund. Die
-  Datei lässt sich im Virenscanner aus der Quarantäne wiederherstellen
+- **Virenscanner** melden unter Umständen einen Fund wie `IDP.Generic`
+  oder blockieren den Download. Das sind heuristische Fehlerkennungen,
+  keine tatsächlichen Funde
 
 ## Lizenz
 
@@ -97,7 +94,7 @@ Quellcode bekommen. Er steckt deshalb in der EXE selbst - abrufbar über
 **Hilfe > Quellcode speichern**. Es genügt also, die EXE weiterzugeben;
 weitere Dateien sind nicht nötig.
 
-## Für Entwickler: EXE bauen
+## Für Entwickler: Setup bauen
 
 Auf einem Windows-PC genügt:
 
@@ -105,10 +102,19 @@ Auf einem Windows-PC genügt:
 .\build.ps1
 ```
 
-Ergebnis ist `dist\Fotosortierer.exe` (ca. 24 MB, alles enthalten).
+Ergebnis ist `dist\Fotosortierer-Setup-<version>.exe` - der
+Setup-Assistent zum Weitergeben. Fehlt Inno Setup, packt das Skript
+ersatzweise ein ZIP des Programmordners.
+
+Für den Setup-Bau wird Inno Setup benötigt:
+
+```
+winget install --id JRSoftware.InnoSetup
+```
+
 Die Build-Konfiguration steckt in `fotosortierer.spec`; dort wird unter
 anderem `collect_all("pillow_heif")` gesetzt, damit die nativen
-HEIC-Bibliotheken mit in die EXE wandern.
+HEIC-Bibliotheken mitgenommen werden, und in `installer.iss` für das Setup.
 
 ## Hinweise & Grenzen
 
