@@ -18,7 +18,9 @@ Handy auf den QNAP-Server geladen werden.
 5. Vor dem Einsortieren zeigt die App alle erkannten Gruppen mit
    Vorschaubildern an. Der Meister kann jede Adresse noch korrigieren,
    bevor die Fotos tatsächlich verschoben werden.
-6. Fotos landen dann in: `Zielordner/<Adresse>/<Datum>/`
+6. Fotos landen dann in: `Zielordner/<PLZ Ort, Strasse Nr>/<Datum>/` -
+   die PLZ steht vorne, damit der Explorer die Haeuser nach
+   Kehrbezirk gruppiert statt nach Strassennamen.
 7. Fotos ohne GPS-Daten werden versucht anhand der Uhrzeit einer
    Gruppe zuzuordnen; falls das nicht möglich ist, landen sie in einer
    Sammelgruppe "Manuell zuordnen".

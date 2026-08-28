@@ -265,6 +265,26 @@ class Adressbuch:
                     self.eintraege = json.load(f)
             except Exception:
                 self.eintraege = []
+            self._format_umstellen()
+
+    def _format_umstellen(self):
+        """
+        Stellt Eintraege aus dem alten Format ("Strasse Nr, PLZ Ort") einmalig
+        auf das neue um. Laeuft still im Hintergrund, damit bekannte Haeuser
+        nach einem Update nicht weiter Ordner im alten Format erzeugen.
+        """
+        geaendert = False
+        for eintrag in self.eintraege:
+            alt = eintrag.get("adresse", "")
+            neu = adresse_ins_neue_format(alt)
+            if neu != alt:
+                eintrag["adresse"] = neu
+                geaendert = True
+        if geaendert:
+            try:
+                self.speichern()
+            except Exception:
+                pass  # Umstellung greift dann beim naechsten Start erneut
 
     def speichern(self):
         with open(self.pfad, "w", encoding="utf-8") as f:
@@ -286,6 +306,52 @@ class Adressbuch:
 # ---------------------------------------------------------------------------
 # Reverse-Geocoding über OpenStreetMap Nominatim (kostenlos, aber rate-limited)
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Adressformat
+#
+# Ordnernamen lauten "PLZ Ort, Strasse Hausnummer". Die PLZ steht vorne, damit
+# der Explorer die Haeuser nach Postleitzahl - also nach Kehrbezirk - gruppiert
+# statt nach Strassennamen. Der Ort bleibt im Namen, weil eine PLZ mehrere
+# Ortsteile umfassen kann und sonst zwei verschiedene Haeuser im selben Ordner
+# landen koennten.
+# ---------------------------------------------------------------------------
+
+def adresse_formatieren(strasse, hausnr, plz, ort):
+    """Baut die Adresszeile. Fehlende Bestandteile werden ausgelassen."""
+    ortsteil = " ".join(t for t in (str(plz).strip(), str(ort).strip()) if t)
+    strassenteil = " ".join(t for t in (str(strasse).strip(), str(hausnr).strip()) if t)
+    return ", ".join(t for t in (ortsteil, strassenteil) if t)
+
+
+def adresse_ins_neue_format(adresse):
+    """
+    Wandelt eine Adresse aus dem alten Format ("Strasse Nr, PLZ Ort") in das
+    neue ("PLZ Ort, Strasse Nr") um.
+
+    Noetig fuer bestehende Adressbuecher: dort stehen fertige Adresszeilen, die
+    direkt als Ordnername dienen. Ohne Umstellung wuerden bekannte Haeuser
+    weiterhin Ordner im alten Format erzeugen.
+
+    Bereits umgestellte oder unbekannte Schreibweisen bleiben unveraendert.
+    """
+    if not adresse or "," not in adresse:
+        return adresse
+
+    vorne, hinten = [t.strip() for t in adresse.split(",", 1)]
+    if not vorne or not hinten:
+        return adresse
+
+    # Steht vorne schon eine Postleitzahl, ist nichts zu tun.
+    if vorne.split(" ", 1)[0].isdigit():
+        return adresse
+
+    # Sonst gilt das alte Format, sobald hinten eine PLZ steht.
+    if hinten.split(" ", 1)[0].isdigit():
+        return f"{hinten}, {vorne}"
+
+    return adresse
+
 
 _LETZTE_ANFRAGE = [0.0]
 
@@ -309,16 +375,12 @@ def reverse_geocode(lat, lon):
         with urllib.request.urlopen(req, timeout=8) as resp:
             daten = json.loads(resp.read().decode("utf-8"))
         adr = daten.get("address", {})
-        strasse = adr.get("road", "")
-        hausnr = adr.get("house_number", "")
-        plz = adr.get("postcode", "")
-        ort = adr.get("city") or adr.get("town") or adr.get("village") or adr.get("municipality", "")
-        teile = []
-        if strasse:
-            teile.append(f"{strasse} {hausnr}".strip())
-        if plz or ort:
-            teile.append(f"{plz} {ort}".strip())
-        adresse = ", ".join(teile) if teile else daten.get("display_name", "")
+        adresse = adresse_formatieren(
+            strasse=adr.get("road", ""),
+            hausnr=adr.get("house_number", ""),
+            plz=adr.get("postcode", ""),
+            ort=adr.get("city") or adr.get("town") or adr.get("village") or adr.get("municipality", ""),
+        ) or daten.get("display_name", "")
         return adresse or None
     except Exception as e:
         print(f"Warnung: Reverse-Geocoding fehlgeschlagen: {e}")
