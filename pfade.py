@@ -26,13 +26,38 @@ VERSION = "1.1.2"
 
 
 def ist_gebundelt():
-    """True, wenn wir als PyInstaller-EXE laufen."""
-    return getattr(sys, "frozen", False)
+    """
+    True, wenn das Programm als fertige EXE laeuft.
+
+    PyInstaller setzt sys.frozen, Nuitka dagegen nicht - dort erkennt man
+    den uebersetzten Zustand am globalen __compiled__. Ohne die zweite
+    Pruefung hielte sich der Nuitka-Build faelschlich fuer eine
+    Quellcode-Ausfuehrung und faende weder Build-Datum noch Beilagen.
+    """
+    return bool(getattr(sys, "frozen", False)) or "__compiled__" in globals()
+
+
+def programm_datei():
+    """
+    Pfad zur laufenden Programmdatei, oder None.
+
+    PyInstaller traegt die EXE in sys.executable ein. Nuitka setzt dort
+    einen python.exe-Pfad, den es gar nicht gibt - die echte EXE steht
+    bei Nuitka in sys.argv[0]. Deshalb beide Kandidaten pruefen und den
+    ersten nehmen, der tatsaechlich existiert.
+    """
+    for kandidat in (sys.executable, sys.argv[0] if sys.argv else None):
+        if kandidat and os.path.isfile(kandidat):
+            return kandidat
+    return None
 
 
 def programm_verzeichnis():
     """Verzeichnis des Programms (EXE-Ordner bzw. Quellcode-Ordner)."""
     if ist_gebundelt():
+        datei = programm_datei()
+        if datei:
+            return os.path.dirname(datei)
         return os.path.dirname(sys.executable)
     return os.path.dirname(os.path.abspath(__file__))
 
@@ -90,7 +115,10 @@ def build_datum():
 
     try:
         if ist_gebundelt():
-            stempel = os.path.getmtime(sys.executable)
+            datei = programm_datei()
+            if not datei:
+                return "unbekannt"
+            stempel = os.path.getmtime(datei)
         else:
             ordner = programm_verzeichnis()
             dateien = [
