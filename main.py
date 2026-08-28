@@ -18,6 +18,29 @@ import pfade
 
 EINSTELLUNGEN_DATEI = pfade.daten_datei("einstellungen.json")
 
+COPYRIGHT_JAHR = "2026"
+RECHTEINHABER = "Jürgen Mutscheller – mutschweb"
+
+UEBER_TEXT = """Foto-Sortierer für Schornsteinfeger
+Version {version} (Build {build})
+
+© {jahr} {inhaber}
+Alle Rechte vorbehalten.
+
+Kartendaten: © OpenStreetMap-Mitwirkende, ODbL-lizenziert.
+Adressermittlung über Nominatim.
+
+Verwendete Bibliotheken:
+    Pillow (MIT-CMU)
+    pillow-heif (BSD-3-Clause)
+    libheif, libde265 (LGPL-3.0)
+    libx265 (GPL-2.0)""".format(
+    version=pfade.VERSION,
+    build=pfade.build_datum(),
+    jahr=COPYRIGHT_JAHR,
+    inhaber=RECHTEINHABER,
+)
+
 
 class FotoSortiererApp(tk.Tk):
     def __init__(self):
@@ -60,7 +83,21 @@ class FotoSortiererApp(tk.Tk):
 
     # -- Oberfläche -----------------------------------------------------------
 
+    def _baue_menue(self):
+        menueleiste = tk.Menu(self)
+
+        hilfe = tk.Menu(menueleiste, tearoff=0)
+        hilfe.add_command(label="Über Foto-Sortierer...", command=self._zeige_ueber)
+        menueleiste.add_cascade(label="Hilfe", menu=hilfe)
+
+        self.config(menu=menueleiste)
+
+    def _zeige_ueber(self):
+        messagebox.showinfo("Über Foto-Sortierer", UEBER_TEXT, parent=self)
+
     def _baue_oberflaeche(self):
+        self._baue_menue()
+
         # Kopfbereich: Ordnerauswahl
         kopf = ttk.Frame(self, padding=10)
         kopf.pack(fill="x")

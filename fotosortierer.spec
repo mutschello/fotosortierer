@@ -21,6 +21,12 @@ a = Analysis(
     noarchive=False,
 )
 
+# Hinweis: libx265 laesst sich nicht aus dem Bundle entfernen. Die
+# Erweiterung _pillow_heif.pyd bindet die DLL beim Laden ein - ohne sie
+# scheitert bereits der Import, auch wenn nur gelesen und nie gespeichert
+# wird. Getestet: Bundle ohne libx265 -> ImportError. Die GPL-2.0 von x265
+# ist daher im Ueber-Dialog ausgewiesen.
+
 pyz = PYZ(a.pure)
 
 exe = EXE(
