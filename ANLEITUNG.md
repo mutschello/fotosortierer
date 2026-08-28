@@ -106,15 +106,21 @@ Ergebnis ist `dist\Fotosortierer-Setup-<version>.exe` - der
 Setup-Assistent zum Weitergeben. Fehlt Inno Setup, packt das Skript
 ersatzweise ein ZIP des Programmordners.
 
-Für den Setup-Bau wird Inno Setup benötigt:
+Für das Setup wird Inno Setup benötigt:
 
 ```
 winget install --id JRSoftware.InnoSetup
 ```
 
-Die Build-Konfiguration steckt in `fotosortierer.spec`; dort wird unter
-anderem `collect_all("pillow_heif")` gesetzt, damit die nativen
-HEIC-Bibliotheken mitgenommen werden, und in `installer.iss` für das Setup.
+Gebaut wird mit **Nuitka**, das den Python-Code nach C übersetzt. Der
+naheliegendere Weg über PyInstaller wurde aufgegeben: Virenscanner
+melden dessen Programme regelmäßig als Fehlerkennung, weil alle
+PyInstaller-Programme denselben Bootloader enthalten. Bei einem Kunden
+verschob Norton die Datei wiederholt in Quarantäne; mit dem
+Nuitka-Build trat das nicht mehr auf.
+
+Die C-Übersetzung dauert einige Minuten. Das Setup selbst beschreibt
+`installer.iss`.
 
 ## Hinweise & Grenzen
 

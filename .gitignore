@@ -7,3 +7,5 @@ build/
 dist/
 *.spec.bak
 Quellcode.zip
+build_nuitka/
+nuitka-crash-report.xml
