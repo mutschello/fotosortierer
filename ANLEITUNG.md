@@ -48,19 +48,44 @@ Beim Start:
 
 Ordner- und letzte Pfadangaben werden gemerkt (`einstellungen.json`).
 
-## Als eigenständige .exe (kein Python nötig)
+## Für Kunden: Installation ohne Python
 
-Damit die Mitarbeiter/der Meister die App ohne Python-Installation
-starten können, lässt sie sich mit PyInstaller in eine einzelne .exe
-packen. Das muss **auf einem Windows-PC** ausgeführt werden:
+Endanwender brauchen **kein Python**. Es gibt zwei Varianten:
+
+**A) Installer (empfohlen)**
+`Fotosortierer-Setup-1.0.0.exe` ausführen. Der Installer legt einen
+Startmenü-Eintrag an, optional ein Desktop-Symbol, und benötigt
+**keine Administratorrechte**.
+
+**B) Portable EXE**
+`Fotosortierer.exe` einfach auf den Rechner kopieren und doppelklicken –
+keine Installation, kein Setup.
+
+Einstellungen und Adressbuch werden in beiden Fällen unter
+`%APPDATA%\Fotosortierer\` gespeichert. Bei einer Deinstallation bleiben
+diese Daten absichtlich erhalten. Wer von der Skript-Version umsteigt:
+eine vorhandene `adressbuch.json` neben dem Programm wird beim ersten
+Start automatisch dorthin übernommen.
+
+## Für Entwickler: EXE und Installer bauen
+
+Alles Nötige erledigt das Build-Skript auf einem Windows-PC:
 
 ```
-pip install pyinstaller
-pyinstaller --onefile --windowed --name FotoSortierer main.py
+.\build.ps1
 ```
 
-Die fertige Datei liegt danach in `dist\FotoSortierer.exe` und kann
-z.B. per Verknüpfung auf den Desktop des Büro-PCs gelegt werden.
+Es baut zuerst `dist\Fotosortierer.exe` (PyInstaller, ca. 24 MB, alles
+enthalten – auch die HEIC-Bibliotheken) und danach den Installer unter
+`installer_output\`. Für den Installer wird Inno Setup benötigt:
+
+```
+winget install --id JRSoftware.InnoSetup
+```
+
+Fehlt Inno Setup, überspringt das Skript diesen Schritt und die portable
+EXE wird trotzdem gebaut. Die Build-Konfiguration steckt in
+`fotosortierer.spec` (EXE) und `installer.iss` (Installer).
 
 ## Hinweise & Grenzen
 

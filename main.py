@@ -14,8 +14,9 @@ from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 
 import sortier_logik as logik
+import pfade
 
-EINSTELLUNGEN_DATEI = "einstellungen.json"
+EINSTELLUNGEN_DATEI = pfade.daten_datei("einstellungen.json")
 
 
 class FotoSortiererApp(tk.Tk):

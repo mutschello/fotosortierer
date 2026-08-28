@@ -16,6 +16,8 @@ from datetime import datetime, timedelta
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 
+import pfade
+
 try:
     import pillow_heif
     pillow_heif.register_heif_opener()
@@ -34,7 +36,7 @@ BILDENDUNGEN = {".jpg", ".jpeg", ".heic", ".heif", ".png"}
 GRUPPEN_RADIUS_METER = 80
 GRUPPEN_MAX_PAUSE_MINUTEN = 240  # falls am selben Haus z.B. vormittags+nachmittags fotografiert wird
 
-ADRESSBUCH_DATEI = "adressbuch.json"
+ADRESSBUCH_DATEI = pfade.daten_datei("adressbuch.json")
 
 
 # ---------------------------------------------------------------------------

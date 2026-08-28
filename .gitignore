@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 einstellungen.json
 adressbuch.json
+build/
+dist/
+installer_output/
+*.spec.bak
