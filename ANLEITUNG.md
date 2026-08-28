@@ -52,19 +52,34 @@ Ordner- und letzte Pfadangaben werden gemerkt (`einstellungen.json`).
 
 ## Für Kunden: Nutzung ohne Python
 
-Endanwender brauchen **kein Python**. Die Datei `Fotosortierer.exe` wird
-einfach auf den Rechner kopiert und per Doppelklick gestartet - keine
-Installation, kein Setup. Sie enthält alles Nötige, auch die
-HEIC-Unterstützung für iPhone-Fotos.
+Endanwender brauchen **kein Python**. Sie bekommen ein ZIP-Archiv
+`Fotosortierer-<version>.zip`:
+
+1. Archiv herunterladen
+2. Mit Rechtsklick auf "Alle extrahieren" entpacken
+3. Im entpackten Ordner `Fotosortierer.exe` doppelklicken
+
+Das Programm **nicht direkt aus dem ZIP heraus starten** - Windows führt es
+dann in einem temporären Ordner aus, in dem es nichts speichern kann.
+
+Der Ordner enthält neben der EXE ein Unterverzeichnis `_internal` mit den
+benötigten Bibliotheken, auch für HEIC-Fotos vom iPhone. Beides gehört
+zusammen und darf nicht getrennt werden.
 
 Einstellungen und Adressbuch werden unter `%APPDATA%\Fotosortierer\`
-gespeichert, nicht neben der EXE. Wer von der Skript-Version umsteigt:
+gespeichert, nicht im Programmordner. Wer von der Skript-Version umsteigt:
 eine vorhandene `adressbuch.json` neben dem Programm wird beim ersten
 Start automatisch dorthin übernommen.
 
-Beim ersten Start zeigt Windows eine SmartScreen-Warnung, weil die EXE
-nicht signiert ist. Über "Weitere Informationen" -> "Trotzdem ausführen"
-lässt sie sich starten.
+### Warnungen von Windows und Virenscannern
+
+Das Programm ist nicht signiert. Deshalb kann zweierlei auftreten:
+
+- **SmartScreen** ("Der Computer wurde durch Windows geschützt"): auf
+  "Weitere Informationen" klicken, dann "Trotzdem ausführen"
+- **Virenscanner** melden unter Umständen einen Fund wie `IDP.Generic`.
+  Das ist eine heuristische Fehlerkennung, kein tatsächlicher Fund. Die
+  Datei lässt sich im Virenscanner aus der Quarantäne wiederherstellen
 
 ## Lizenz
 

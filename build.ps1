@@ -2,7 +2,8 @@
     Baut den Foto-Sortierer als eigenstaendige Windows-EXE.
 
     Aufruf:   .\build.ps1
-    Ergebnis: dist\Fotosortierer.exe
+    Ergebnis: dist\Fotosortierer\ (Programmordner)
+              dist\Fotosortierer-<version>.zip  (zum Weitergeben)
 #>
 
 $ErrorActionPreference = "Stop"
@@ -39,6 +40,14 @@ Write-Host "`nBaue EXE mit PyInstaller..." -ForegroundColor Cyan
 if ($LASTEXITCODE -ne 0) { throw "PyInstaller-Build fehlgeschlagen." }
 
 
+# Der Onedir-Ordner wird als ZIP weitergegeben: eine Datei zum Verschicken,
+# und Browser blockieren Archive seltener als nackte EXE-Dateien.
+Write-Host "`nPacke Programmordner fuer die Weitergabe..." -ForegroundColor Cyan
+$version = (Select-String -Path pfade.py -Pattern '^VERSION = "(.+)"').Matches[0].Groups[1].Value
+$paket = "dist\Fotosortierer-$version.zip"
+if (Test-Path $paket) { Remove-Item $paket }
+Compress-Archive -Path "dist\Fotosortierer" -DestinationPath $paket
+
 Write-Host "`nFertig." -ForegroundColor Green
-Write-Host "Weiterzugeben ist nur dist\Fotosortierer.exe -" -ForegroundColor Green
-Write-Host "der Quellcode steckt darin." -ForegroundColor Green
+Write-Host "An Kunden weitergeben: $paket" -ForegroundColor Green
+Write-Host "Der Quellcode steckt darin (Hilfe > Quellcode speichern)." -ForegroundColor Green

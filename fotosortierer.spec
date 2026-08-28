@@ -13,9 +13,9 @@ a = Analysis(
     ["main.py"],
     pathex=[],
     binaries=heif_binaries,
-    # Quellcode.zip wird von build.ps1 vor dem Bauen erzeugt und hier in die
-    # EXE gelegt. Die GPL verlangt, dass Empfaenger an den Quellcode kommen -
-    # eingebettet bleibt es bei einer einzigen Datei zum Weitergeben.
+    # Quellcode.zip wird von build.ps1 vor dem Bauen erzeugt und hier ins
+    # Programmverzeichnis gelegt. Die GPL verlangt, dass Empfaenger an den
+    # Quellcode kommen; abrufbar unter Hilfe > Quellcode speichern.
     datas=heif_datas + [("Quellcode.zip", ".")],
     hiddenimports=heif_hidden,
     hookspath=[],
@@ -32,18 +32,31 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
+# Onedir statt Onefile: Im Onefile-Modus entpackt sich die EXE beim Start
+# selbst in einen Temp-Ordner und startet sich von dort. Virenscanner werten
+# das als Packer-Verhalten - Norton meldete IDP.Generic, eine rein
+# heuristische Fehlerkennung. Onedir legt die Dateien offen daneben und
+# vermeidet dieses Muster. Weitergegeben wird der Ordner als ZIP.
+
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
+    exclude_binaries=True,      # Bibliotheken kommen ueber COLLECT daneben
     name="Fotosortierer",
     debug=False,
     strip=False,
     upx=False,
-    runtime_tmpdir=None,
-    console=False,          # GUI-Programm: kein schwarzes Konsolenfenster
+    console=False,              # GUI-Programm: kein schwarzes Konsolenfenster
     icon="fotosortierer.ico",
     version="version_info.txt",
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=False,
+    name="Fotosortierer",
 )
