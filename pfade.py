@@ -22,7 +22,7 @@ import shutil
 import sys
 
 APP_NAME = "Fotosortierer"
-VERSION = "1.1.2"
+VERSION = "1.2.0"
 
 
 def ist_gebundelt():

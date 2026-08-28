@@ -46,7 +46,8 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Der komplette Onedir-Ordner inklusive _internal und eingebettetem Quellcode.
+; Der komplette Programmordner samt Bibliotheken und eingebettetem Quellcode.
+; Nuitka legt alles flach in den Ordner, es gibt kein _internal.
 Source: "dist\Fotosortierer\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]

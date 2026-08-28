@@ -8,5 +8,4 @@ dist/
 *.spec.bak
 Quellcode.zip
 build_nuitka/
-dist_nuitka/
 nuitka-crash-report.xml
