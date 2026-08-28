@@ -4,6 +4,16 @@ Enthält: EXIF/GPS-Auslesen, Gruppierung von Fotos zu "Terminen",
 Adressbuch-Verwaltung (Cache) und Reverse-Geocoding über OpenStreetMap (Nominatim).
 """
 
+# Copyright (C) 2026 Jürgen Mutscheller – mutschweb
+#
+# Dieses Programm ist freie Software: Sie können es unter den Bedingungen
+# der GNU General Public License, Version 3 oder (nach Ihrer Wahl) jeder
+# späteren Version, weitergeben und/oder verändern.
+#
+# Die Veröffentlichung erfolgt in der Hoffnung, dass es nützlich ist,
+# jedoch OHNE JEDE GEWÄHRLEISTUNG. Einzelheiten stehen in der Datei
+# LICENSE, die dem Programm beiliegt.
+
 import os
 import json
 import time

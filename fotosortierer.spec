@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""
+r"""
 PyInstaller-Beschreibung für den Foto-Sortierer.
 Bauen mit:  .venv\Scripts\pyinstaller.exe fotosortierer.spec --noconfirm
 """

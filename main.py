@@ -7,6 +7,16 @@ automatisch anhand der GPS-Daten in Ordner, die nach der Hausadresse benannt sin
 Start: python main.py
 """
 
+# Copyright (C) 2026 Jürgen Mutscheller – mutschweb
+#
+# Dieses Programm ist freie Software: Sie können es unter den Bedingungen
+# der GNU General Public License, Version 3 oder (nach Ihrer Wahl) jeder
+# späteren Version, weitergeben und/oder verändern.
+#
+# Die Veröffentlichung erfolgt in der Hoffnung, dass es nützlich ist,
+# jedoch OHNE JEDE GEWÄHRLEISTUNG. Einzelheiten stehen in der Datei
+# LICENSE, die dem Programm beiliegt.
+
 import os
 import threading
 import tkinter as tk
@@ -25,7 +35,12 @@ UEBER_TEXT = """Foto-Sortierer für Schornsteinfeger
 Version {version} (Build {build})
 
 © {jahr} {inhaber}
-Alle Rechte vorbehalten.
+
+Freie Software unter der GNU General Public License,
+Version 3 oder später. Der vollständige Quellcode liegt
+als Quellcode.zip bei, der Lizenztext in der Datei LICENSE.
+
+Dieses Programm kommt OHNE JEDE GEWÄHRLEISTUNG.
 
 Kartendaten: © OpenStreetMap-Mitwirkende, ODbL-lizenziert.
 Adressermittlung über Nominatim.

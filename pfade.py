@@ -1,11 +1,21 @@
 r"""
 Zentrale Pfad-Verwaltung.
 
-Wichtig für die EXE-/Installer-Variante: Als installiertes Programm liegt die
-Anwendung in C:\Program Files\..., das für normale Benutzer nicht beschreibbar
-ist. Benutzerdaten (Einstellungen, Adressbuch) gehören daher nach
+Wichtig für die EXE-Variante: Wird das Programm in einen nur lesbaren
+Ordner gelegt (etwa C:\Program Files\...), kann es dort nichts speichern.
+Benutzerdaten (Einstellungen, Adressbuch) gehören daher nach
 %APPDATA%\Fotosortierer und nicht neben das Programm.
 """
+
+# Copyright (C) 2026 Jürgen Mutscheller – mutschweb
+#
+# Dieses Programm ist freie Software: Sie können es unter den Bedingungen
+# der GNU General Public License, Version 3 oder (nach Ihrer Wahl) jeder
+# späteren Version, weitergeben und/oder verändern.
+#
+# Die Veröffentlichung erfolgt in der Hoffnung, dass es nützlich ist,
+# jedoch OHNE JEDE GEWÄHRLEISTUNG. Einzelheiten stehen in der Datei
+# LICENSE, die dem Programm beiliegt.
 
 import os
 import shutil

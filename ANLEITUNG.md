@@ -66,6 +66,21 @@ Beim ersten Start zeigt Windows eine SmartScreen-Warnung, weil die EXE
 nicht signiert ist. Über "Weitere Informationen" -> "Trotzdem ausführen"
 lässt sie sich starten.
 
+## Lizenz
+
+Der Foto-Sortierer steht unter der **GNU General Public License,
+Version 3 oder später**. Der vollständige Lizenztext liegt in der Datei
+`LICENSE`.
+
+Das ist keine freiwillige Entscheidung: Die EXE enthält `libx265` unter
+GPL-2.0. Diese Bibliothek lässt sich nicht entfernen, weil `pillow-heif`
+sie schon beim Laden einbindet - ohne sie wäre keine HEIC-Unterstützung
+für iPhone-Fotos möglich.
+
+**Für die Weitergabe bedeutet das:** Wer die EXE bekommt, muss auch den
+Quellcode bekommen. Das Build-Skript legt deshalb `Quellcode.zip` neben
+die EXE. Beide Dateien zusammen weitergeben, dann ist die Lizenz erfüllt.
+
 ## Für Entwickler: EXE bauen
 
 Auf einem Windows-PC genügt:
