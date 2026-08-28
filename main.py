@@ -231,7 +231,7 @@ wird das Archiv von build.ps1 mit eingebaut.""",
         kopf = ttk.Frame(self, padding=10)
         kopf.pack(fill="x")
 
-        ttk.Label(kopf, text="Eingangsordner (von Qfile Pro / NAS):").grid(row=0, column=0, sticky="w")
+        ttk.Label(kopf, text="Eingangsordner:").grid(row=0, column=0, sticky="w")
         ttk.Entry(kopf, textvariable=self.eingangsordner, width=60).grid(row=0, column=1, padx=5)
         ttk.Button(kopf, text="Wählen...", command=self._waehle_eingangsordner).grid(row=0, column=2)
 
