@@ -8,21 +8,18 @@ Benutzerdaten (Einstellungen, Adressbuch) gehören daher nach
 """
 
 # Copyright (C) 2026 Jürgen Mutscheller – mutschweb
+# Alle Rechte vorbehalten.
 #
-# Dieses Programm ist freie Software: Sie können es unter den Bedingungen
-# der GNU General Public License, Version 3 oder (nach Ihrer Wahl) jeder
-# späteren Version, weitergeben und/oder verändern.
-#
-# Die Veröffentlichung erfolgt in der Hoffnung, dass es nützlich ist,
-# jedoch OHNE JEDE GEWÄHRLEISTUNG. Einzelheiten stehen in der Datei
-# LICENSE, die dem Programm beiliegt.
+# Dieses Programm nutzt libheif und libde265 unter der LGPL-3.0. Beide
+# liegen als eigenstaendige Bibliotheken im Programmordner und koennen
+# ausgetauscht werden; ihre Quellen sind auf Anfrage erhaeltlich.
 
 import os
 import shutil
 import sys
 
 APP_NAME = "Fotosortierer"
-VERSION = "1.3.0"
+VERSION = "2.0.0"
 
 
 def ist_gebundelt():
@@ -167,7 +164,7 @@ def desktop_verknuepfung_anlegen():
         "$s.TargetPath = " + ps_text(ziel) + "; "
         "$s.WorkingDirectory = " + ps_text(ordner) + "; "
         "$s.IconLocation = " + ps_text(str(ziel) + ",0") + "; "
-        "$s.Description = 'Foto-Sortierer fuer Schornsteinfeger'; "
+        "$s.Description = 'Foto-Sortierer fuer Handwerksbetriebe'; "
         "$s.Save(); "
         "Write-Output $p"
     )

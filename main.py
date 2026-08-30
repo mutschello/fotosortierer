@@ -1,24 +1,20 @@
 """
-Foto-Sortierer für Schornsteinfeger
-------------------------------------
-Sortiert Fotos vom Server (z.B. QNAP-Ordner, in den Qfile Pro hochlädt)
-automatisch anhand der GPS-Daten in Ordner, die nach der Hausadresse benannt sind.
+Foto-Sortierer
+--------------
+Sortiert Fotos von einem Netzlaufwerk oder Ordner automatisch anhand der
+GPS-Daten in Ordner, die nach der Hausadresse benannt sind.
 
 Start: python main.py
 """
 
 # Copyright (C) 2026 Jürgen Mutscheller – mutschweb
+# Alle Rechte vorbehalten.
 #
-# Dieses Programm ist freie Software: Sie können es unter den Bedingungen
-# der GNU General Public License, Version 3 oder (nach Ihrer Wahl) jeder
-# späteren Version, weitergeben und/oder verändern.
-#
-# Die Veröffentlichung erfolgt in der Hoffnung, dass es nützlich ist,
-# jedoch OHNE JEDE GEWÄHRLEISTUNG. Einzelheiten stehen in der Datei
-# LICENSE, die dem Programm beiliegt.
+# Dieses Programm nutzt libheif und libde265 unter der LGPL-3.0. Beide
+# liegen als eigenstaendige Bibliotheken im Programmordner und koennen
+# ausgetauscht werden; ihre Quellen sind auf Anfrage erhaeltlich.
 
 import os
-import shutil
 import threading
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -29,29 +25,26 @@ import pfade
 
 EINSTELLUNGEN_DATEI = pfade.daten_datei("einstellungen.json")
 
-QUELLCODE_ARCHIV = "Quellcode.zip"
 COPYRIGHT_JAHR = "2026"
 RECHTEINHABER = "Jürgen Mutscheller – mutschweb"
 
-UEBER_TEXT = """Foto-Sortierer für Schornsteinfeger
+UEBER_TEXT = """Foto-Sortierer
 Version {version} (Build {build})
 
 © {jahr} {inhaber}
-
-Freie Software unter der GNU General Public License,
-Version 3 oder später. Der vollständige Quellcode ist in
-diesem Programm enthalten: Hilfe > Quellcode speichern.
-
-Dieses Programm kommt OHNE JEDE GEWÄHRLEISTUNG.
+Alle Rechte vorbehalten.
 
 Kartendaten: © OpenStreetMap-Mitwirkende, ODbL-lizenziert.
 Adressermittlung über Nominatim.
 
 Verwendete Bibliotheken:
     Pillow (MIT-CMU)
-    pillow-heif (BSD-3-Clause)
+    pi-heif (BSD-3-Clause)
     libheif, libde265 (LGPL-3.0)
-    libx265 (GPL-2.0)""".format(
+
+Die LGPL-Bibliotheken liegen als eigenständige Dateien im
+Programmordner und können ausgetauscht werden. Ihre Quellen
+sind auf Anfrage erhältlich.""".format(
     version=pfade.VERSION,
     build=pfade.build_datum(),
     jahr=COPYRIGHT_JAHR,
@@ -62,7 +55,7 @@ Verwendete Bibliotheken:
 class FotoSortiererApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title(f"Foto-Sortierer – Schornsteinfeger   {pfade.titel_zusatz()}")
+        self.title(f"Foto-Sortierer   {pfade.titel_zusatz()}")
         self.geometry("1000x700")
         self.minsize(800, 600)
 
@@ -113,8 +106,6 @@ class FotoSortiererApp(tk.Tk):
         menueleiste.add_cascade(label="Extras", menu=extras)
 
         hilfe = tk.Menu(menueleiste, tearoff=0)
-        hilfe.add_command(label="Quellcode speichern...", command=self._speichere_quellcode)
-        hilfe.add_separator()
         hilfe.add_command(label="Über Foto-Sortierer...", command=self._zeige_ueber)
         menueleiste.add_cascade(label="Hilfe", menu=hilfe)
 
@@ -169,57 +160,6 @@ Sie können das später jederzeit über Extras nachholen.""",
         )
         if antwort:
             self._lege_verknuepfung_an()
-
-    def _speichere_quellcode(self):
-        """
-        Gibt den in der EXE eingebetteten Quellcode heraus.
-
-        Die GPL verlangt, dass jeder Empfaenger des Programms auch an den
-        Quellcode kommt. Er steckt deshalb im Programm selbst - so gibt es
-        nur eine Datei weiterzugeben.
-        """
-        quelle = os.path.join(pfade.ressourcen_verzeichnis(), QUELLCODE_ARCHIV)
-        if not os.path.isfile(quelle):
-            messagebox.showerror(
-                "Quellcode nicht gefunden",
-                """Der Quellcode ist in dieser Fassung nicht eingebettet.
-
-Beim Start aus dem Quellcode heraus liegen die Dateien
-ohnehin offen im Programmordner. In der fertigen EXE
-wird das Archiv von build.ps1 mit eingebaut.""",
-                parent=self,
-            )
-            return
-
-        ziel = filedialog.asksaveasfilename(
-            parent=self,
-            title="Quellcode speichern",
-            initialfile=QUELLCODE_ARCHIV,
-            defaultextension=".zip",
-            filetypes=[("ZIP-Archiv", "*.zip")],
-        )
-        if not ziel:
-            return
-
-        try:
-            shutil.copyfile(quelle, ziel)
-        except Exception as fehler:
-            messagebox.showerror(
-                "Speichern fehlgeschlagen",
-                f"""Der Quellcode konnte nicht gespeichert werden:
-
-{fehler}""",
-                parent=self,
-            )
-            return
-
-        messagebox.showinfo(
-            "Quellcode gespeichert",
-            f"""Der vollständige Quellcode wurde gespeichert:
-
-{ziel}""",
-            parent=self,
-        )
 
     def _zeige_ueber(self):
         messagebox.showinfo("Über Foto-Sortierer", UEBER_TEXT, parent=self)

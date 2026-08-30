@@ -1,8 +1,9 @@
-# Foto-Sortierer für Schornsteinfeger
+# Foto-Sortierer
 
 Sortiert Fotos automatisch anhand von GPS-Daten in Ordner, die nach der
-Hausadresse benannt sind – z.B. für Fotos, die über **Qfile Pro** vom
-Handy auf den QNAP-Server geladen werden.
+Hausadresse benannt sind. Gedacht für Handwerksbetriebe und kleine
+Unternehmen, die ihre Arbeit vor Ort mit Fotos dokumentieren – etwa für
+Bilder, die vom Handy auf einen Netzwerkspeicher hochgeladen werden.
 
 ## Funktionsweise (kurz)
 
@@ -41,7 +42,7 @@ python main.py
 ```
 
 Beim Start:
-1. **Eingangsordner** wählen – der Ordner, in den Qfile Pro auf dem
+1. **Eingangsordner** wählen – der Ordner, in den die Fotos auf dem
    Server hochlädt.
 2. **Zielordner** wählen – wo die sortierten Fotos landen sollen.
 3. "Fotos einlesen und gruppieren" klicken.
@@ -91,19 +92,27 @@ Computer wurde durch Windows geschützt" - über "Weitere Informationen"
 
 ## Lizenz
 
-Der Foto-Sortierer steht unter der **GNU General Public License,
-Version 3 oder später**. Der vollständige Lizenztext liegt in der Datei
+Der Foto-Sortierer ist urheberrechtlich geschütztes Eigentum von
+Jürgen Mutscheller – mutschweb. Einzelheiten stehen in der Datei
 `LICENSE`.
 
-Das ist keine freiwillige Entscheidung: Die EXE enthält `libx265` unter
-GPL-2.0. Diese Bibliothek lässt sich nicht entfernen, weil `pillow-heif`
-sie schon beim Laden einbindet - ohne sie wäre keine HEIC-Unterstützung
-für iPhone-Fotos möglich.
+Verwendete Fremdbibliotheken:
 
-**Für die Weitergabe bedeutet das:** Wer die EXE bekommt, muss auch den
-Quellcode bekommen. Er steckt deshalb in der EXE selbst - abrufbar über
-**Hilfe > Quellcode speichern**. Es genügt also, die EXE weiterzugeben;
-weitere Dateien sind nicht nötig.
+| Bibliothek | Lizenz |
+|---|---|
+| Pillow | MIT-CMU |
+| pi-heif | BSD-3-Clause |
+| libheif, libde265 | LGPL-3.0 |
+
+Die beiden LGPL-Bibliotheken liegen als eigenständige Dateien im
+Programmordner und lassen sich austauschen – damit ist die LGPL erfüllt,
+ohne dass der eigene Quellcode offengelegt werden muss.
+
+Bewusst **nicht** verwendet wird `pillow-heif`: Dessen Paket bindet den
+x265-Encoder ein, der unter GPL steht und das gesamte Programm unter die
+GPL zwingen würde. `pi-heif` ist die Dekodier-Variante desselben
+Entwicklers und kommt ohne x265 aus. Da das Programm nie ein Bild
+speichert, entsteht dadurch kein Nachteil.
 
 ## Für Entwickler: Programm bauen
 

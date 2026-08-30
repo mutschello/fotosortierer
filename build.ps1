@@ -26,42 +26,27 @@ if (-not (Test-Path $python)) {
 $version = (Select-String -Path pfade.py -Pattern '^VERSION = "(.+)"').Matches[0].Groups[1].Value
 Write-Host "`nFoto-Sortierer $version" -ForegroundColor Cyan
 
-# Die GPL verlangt, dass Empfaenger des Programms auch den Quellcode
-# bekommen. Das Archiv wird deshalb vor dem Build gepackt und mit in das
-# Programm gelegt. Abrufbar unter Hilfe > Quellcode speichern.
-Write-Host "`n[1/3] Packe Quellcode..." -ForegroundColor Cyan
-$quellen = @(
-    "main.py", "sortier_logik.py", "pfade.py",
-    "version_info.txt", "fotosortierer.ico",
-    "build.ps1", "requirements.txt", "ANLEITUNG.md", "LICENSE"
-)
-$fehlend = $quellen | Where-Object { -not (Test-Path $_) }
-if ($fehlend) { throw "Quellcode unvollstaendig, fehlt: $($fehlend -join ', ')" }
-if (Test-Path "Quellcode.zip") { Remove-Item "Quellcode.zip" }
-Compress-Archive -Path $quellen -DestinationPath "Quellcode.zip"
-
 # Nuitkas Standard-Cache landet unter AppData\Local\Packages\... - ein sehr
 # langer, umgeleiteter Containerpfad. gcc findet darueber seine eigenen
 # Header nicht (Fehler: structuredquerycondition.h not found), obwohl sie
 # vorhanden sind. Ein kurzer Pfad behebt das.
 $env:NUITKA_CACHE_DIR = "C:\nuitka-cache"
 
-Write-Host "`n[2/3] Uebersetze mit Nuitka (dauert einige Minuten)..." -ForegroundColor Cyan
+Write-Host "`n[1/2] Uebersetze mit Nuitka (dauert einige Minuten)..." -ForegroundColor Cyan
 Remove-Item -Recurse -Force build_nuitka -ErrorAction SilentlyContinue
 & $python -m nuitka `
     --standalone `
     --assume-yes-for-downloads `
     --enable-plugin=tk-inter `
-    --include-package=pillow_heif `
-    --include-package-data=pillow_heif `
-    --include-data-files=Quellcode.zip=Quellcode.zip `
+    --include-package=pi_heif `
+    --include-package-data=pi_heif `
     --windows-console-mode=disable `
     --windows-icon-from-ico=fotosortierer.ico `
     --company-name="Juergen Mutscheller - mutschweb" `
     --product-name="Foto-Sortierer" `
     --file-version=$version.0 `
     --product-version=$version.0 `
-    --file-description="Foto-Sortierer fuer Schornsteinfeger" `
+    --file-description="Foto-Sortierer fuer Handwerksbetriebe" `
     --copyright="(c) 2026 Juergen Mutscheller - mutschweb" `
     --output-dir=build_nuitka `
     --output-filename=Fotosortierer.exe `
@@ -77,7 +62,7 @@ Move-Item "build_nuitka\main.dist" "dist\Fotosortierer"
 # selbstentpackende Setup-Dateien als Fehlerkennung - der blosse
 # Programmordner im ZIP kommt dagegen durch. Die Desktop-Verknuepfung legt
 # das Programm selbst an (Extras > Verknuepfung auf dem Desktop anlegen).
-Write-Host "`n[3/3] Packe Programmordner fuer die Weitergabe..." -ForegroundColor Cyan
+Write-Host "`n[2/2] Packe Programmordner fuer die Weitergabe..." -ForegroundColor Cyan
 $paket = "dist\Fotosortierer-$version.zip"
 if (Test-Path $paket) { Remove-Item $paket }
 Compress-Archive -Path "dist\Fotosortierer" -DestinationPath $paket

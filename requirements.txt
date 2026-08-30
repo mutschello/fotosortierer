@@ -1,2 +1,2 @@
 pillow
-pillow-heif
+pi-heif

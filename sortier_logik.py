@@ -5,14 +5,11 @@ Adressbuch-Verwaltung (Cache) und Reverse-Geocoding über OpenStreetMap (Nominat
 """
 
 # Copyright (C) 2026 Jürgen Mutscheller – mutschweb
+# Alle Rechte vorbehalten.
 #
-# Dieses Programm ist freie Software: Sie können es unter den Bedingungen
-# der GNU General Public License, Version 3 oder (nach Ihrer Wahl) jeder
-# späteren Version, weitergeben und/oder verändern.
-#
-# Die Veröffentlichung erfolgt in der Hoffnung, dass es nützlich ist,
-# jedoch OHNE JEDE GEWÄHRLEISTUNG. Einzelheiten stehen in der Datei
-# LICENSE, die dem Programm beiliegt.
+# Dieses Programm nutzt libheif und libde265 unter der LGPL-3.0. Beide
+# liegen als eigenstaendige Bibliotheken im Programmordner und koennen
+# ausgetauscht werden; ihre Quellen sind auf Anfrage erhaeltlich.
 
 import os
 import json
@@ -29,8 +26,12 @@ from PIL.ExifTags import TAGS, GPSTAGS
 import pfade
 
 try:
-    import pillow_heif
-    pillow_heif.register_heif_opener()
+    # pi-heif ist die reine Dekodier-Variante von pillow-heif. Sie bringt
+    # libheif und libde265 unter LGPL mit, aber nicht den x265-Encoder, der
+    # unter GPL steht. Gelesen wird HEIC damit genauso; gespeichert wird
+    # ohnehin nie ein Bild.
+    import pi_heif
+    pi_heif.register_heif_opener()
     HEIF_SUPPORT = True
 except ImportError:
     HEIF_SUPPORT = False
@@ -43,7 +44,7 @@ BILDENDUNGEN = {".jpg", ".jpeg", ".heic", ".heif", ".png"}
 
 # Fotos, die näher als dieser Radius (Meter) beieinander liegen UND
 # nicht mehr als GRUPPEN_MAX_PAUSE auseinander liegen (Zeit), gehören zum selben Termin.
-GRUPPEN_RADIUS_METER = 80
+GRUPPEN_RADIUS_METER = 10
 GRUPPEN_MAX_PAUSE_MINUTEN = 240  # falls am selben Haus z.B. vormittags+nachmittags fotografiert wird
 
 ADRESSBUCH_DATEI = pfade.daten_datei("adressbuch.json")
@@ -381,7 +382,7 @@ def reverse_geocode(lat, lon):
         "addressdetails": 1,
     })
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Fotosortierer-Schornsteinfeger/1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "Fotosortierer/1.0"})
         with urllib.request.urlopen(req, timeout=8) as resp:
             daten = json.loads(resp.read().decode("utf-8"))
         adr = daten.get("address", {})
